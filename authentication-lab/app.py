@@ -20,18 +20,9 @@ firebaseConfig = {
 firebase =pyrebase.initialize_app (firebaseConfig)
 auth = firebase.auth()
 
-
-@app.route('/', methods=['GET', 'POST'])
-def signin():
-    if request.method =='POST':
-        email= request.form['email']
-        password = request.form ['password']
-        try:
-            login_session['user'] = auth.signin_user_with_email_and_password(email,password)
-        return redirect (url_for("add_tweet.html"))
-    except:
-        error = 'Signin Failed'
-    return render_template("signin.html")
+@app.route('/')
+def home():
+    return render_template('home.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -41,15 +32,30 @@ def signup():
         password = request.form ['password']
         try:
             login_session['user'] = auth.create_user_with_email_and_password(email,password)
-        return redirect (url_for("add_tweet.html"))
-    except:
-        error = 'Failed'
-    return render_template('signup.html')
+            return redirect(url_for('add_tweet'))
+        except:
+            error = 'Signup Failed'
+    else: 
+        return render_template('signup.html')
+
+
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method =='POST':
+        email= request.form['email']
+        password = request.form ['password']
+        try:
+            login_session['user'] = auth.sign_in_with_email_and_password(email,password)
+            return redirect(url_for('add_tweet'))
+        except:
+            error = 'Authentication Failed'
+    else:
+        return render_template("signin.html")
 
 
 @app.route('/add_tweet', methods=['GET', 'POST'])
 def add_tweet():
-    return render_template("add_tweet.html")
+    return render_template('add_tweet.html')
 
 
 if __name__ == '__main__':
